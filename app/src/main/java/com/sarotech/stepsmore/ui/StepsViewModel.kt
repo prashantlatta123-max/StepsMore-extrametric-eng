@@ -1,3 +1,4 @@
+
 package com.sarotech.stepsmore.ui
 
 import androidx.lifecycle.ViewModel
@@ -24,7 +25,9 @@ class StepsViewModel(private val repository: StepsRepository) : ViewModel() {
 
     val todaySteps: StateFlow<Int> = _currentDate
         .flatMapLatest { date ->
-            repository.observeStepsForDate(date.format(DateTimeFormatter.ISO_LOCAL_DATE))
+            repository.observeStepsForDate(
+                date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            )
         }
         .map { it ?: 0 }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
@@ -33,17 +36,20 @@ class StepsViewModel(private val repository: StepsRepository) : ViewModel() {
         .flatMapLatest { date -> repository.observePast7Days(date) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val allDaily: StateFlow<List<DailyStepsEntity>> = repository.observeAllDaily()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val allDaily: StateFlow<List<DailyStepsEntity>> =
+        repository.observeAllDaily()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _selectedDateIso = MutableStateFlow<String?>(null)
     val selectedDateIso: StateFlow<String?> = _selectedDateIso.asStateFlow()
 
-    val selectedHourlySteps: StateFlow<List<HourlyStepsEntity>> = _selectedDateIso
-        .flatMapLatest { date ->
-            if (date == null) flowOf(emptyList()) else repository.observeHourlyForDate(date)
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val selectedHourlySteps: StateFlow<List<HourlyStepsEntity>> =
+        _selectedDateIso
+            .flatMapLatest { date ->
+                if (date == null) flowOf(emptyList())
+                else repository.observeHourlyForDate(date)
+            }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun refreshDate() {
         val now = LocalDate.now()
@@ -53,7 +59,8 @@ class StepsViewModel(private val repository: StepsRepository) : ViewModel() {
     }
 
     fun toggleSelectedDate(dateIso: String) {
-        _selectedDateIso.value = if (_selectedDateIso.value == dateIso) null else dateIso
+        _selectedDateIso.value =
+            if (_selectedDateIso.value == dateIso) null else dateIso
     }
 
     fun clearSelectedDate() {
@@ -74,26 +81,91 @@ class StepsViewModel(private val repository: StepsRepository) : ViewModel() {
         }
     }
 
-    fun updateDailyGoal(goal: Int) = viewModelScope.launch { repository.prefs.setDailyGoal(goal) }
-    fun setNotifyWhenReached(v: Boolean) = viewModelScope.launch { repository.prefs.setNotifyWhenReached(v) }
-    fun setShowProgressInNotification(v: Boolean) = viewModelScope.launch { repository.prefs.setShowProgressInNotification(v) }
-    fun setEncouragingNotifications(v: Boolean) = viewModelScope.launch { repository.prefs.setEncouragingNotifications(v) }
-    fun setDrawTargetLine(v: Boolean) = viewModelScope.launch { repository.prefs.setDrawTargetLine(v) }
-    fun setHeightCm(v: Int) = viewModelScope.launch { repository.prefs.setHeightCm(v) }
-    fun setStepLengthCm(v: Float) = viewModelScope.launch { repository.prefs.setStepLengthCm(v) }
-    fun setWeightKg(v: Int) = viewModelScope.launch { repository.prefs.setWeightKg(v) }
-    fun setUnitSystem(v: String) = viewModelScope.launch { repository.prefs.setUnitSystem(v) }
-    fun setDateFormat(v: String) = viewModelScope.launch { repository.prefs.setDateFormat(v) }
-    fun setFirstDayOfWeek(v: String) = viewModelScope.launch { repository.prefs.setFirstDayOfWeek(v) }
-    fun setSensorMode(v: String) = viewModelScope.launch { repository.prefs.setSensorMode(v) }
-    fun setThemeMode(v: String) = viewModelScope.launch { repository.prefs.setThemeMode(v) }
+    fun updateDailyGoal(goal: Int) =
+        viewModelScope.launch {
+            repository.prefs.setDailyGoal(goal)
+        }
 
-    suspend fun exportBackupJson(): String = repository.exportBackupJson()
-    suspend fun importBackupJson(json: String): Int = repository.importBackupJson(json)
+    fun setNotifyWhenReached(v: Boolean) =
+        viewModelScope.launch {
+            repository.prefs.setNotifyWhenReached(v)
+        }
 
-    class Factory(private val repository: StepsRepository) : ViewModelProvider.Factory {
+    fun setShowProgressInNotification(v: Boolean) =
+        viewModelScope.launch {
+            repository.prefs.setShowProgressInNotification(v)
+        }
+
+    fun setEncouragingNotifications(v: Boolean) =
+        viewModelScope.launch {
+            repository.prefs.setEncouragingNotifications(v)
+        }
+
+    fun setDrawTargetLine(v: Boolean) =
+        viewModelScope.launch {
+            repository.prefs.setDrawTargetLine(v)
+        }
+
+    fun setHeightCm(v: Int) =
+        viewModelScope.launch {
+            repository.prefs.setHeightCm(v)
+        }
+
+    fun setStepLengthCm(v: Float) =
+        viewModelScope.launch {
+            repository.prefs.setStepLengthCm(v)
+        }
+
+    fun setWeightKg(v: Int) =
+        viewModelScope.launch {
+            repository.prefs.setWeightKg(v)
+        }
+
+    fun setUnitSystem(v: String) =
+        viewModelScope.launch {
+            repository.prefs.setUnitSystem(v)
+        }
+
+    fun setDateFormat(v: String) =
+        viewModelScope.launch {
+            repository.prefs.setDateFormat(v)
+        }
+
+    fun setFirstDayOfWeek(v: String) =
+        viewModelScope.launch {
+            repository.prefs.setFirstDayOfWeek(v)
+        }
+
+    fun setSensorMode(v: String) =
+        viewModelScope.launch {
+            repository.prefs.setSensorMode(v)
+        }
+
+    fun setThemeMode(v: String) =
+        viewModelScope.launch {
+            repository.prefs.setThemeMode(v)
+        }
+
+    // Custom Accent Color
+    fun setAccentColorHex(v: String) =
+        viewModelScope.launch {
+            repository.prefs.setAccentColorHex(v)
+        }
+
+    suspend fun exportBackupJson(): String =
+        repository.exportBackupJson()
+
+    suspend fun importBackupJson(json: String): Int =
+        repository.importBackupJson(json)
+
+    class Factory(
+        private val repository: StepsRepository
+    ) : ViewModelProvider.Factory {
+
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(
+            modelClass: Class<T>
+        ): T {
             return StepsViewModel(repository) as T
         }
     }
